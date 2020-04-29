@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+    </head>
+    <body>
+        <form action="">
+            <p>Introduzca su año de nacimiento aquí:</p>
+            <div class="field">
+                <input type="number" class="year">
+            </div>
+            <p>Calcularemos su edad</p>
+            <button id="calculateBtn">Calcular</button>
+        </form>
+        <div class="result">
+            <p>Su edad es: <span class="age" id="age"></span></p>
+        </div>
+        <div class="history">
+            <h2>Historial de edades calculadas:</h2>
+            <ul id="ages">
+            </ul>
+        </div>
+    </body>
+    <script>
+        $(document).ready(function(){
+            localStorage.setItem('ages', JSON.stringify([]));
+
+            $("#calculateBtn").click(function(e){
+                e.preventDefault();
+                var yearBorn = $(".year").val();
+                var age = calculateAge(yearBorn);
+                $("#age").text(age);
+                $(".result").show();
+                updateHistory();
+
+                var ages = JSON.parse(localStorage.getItem('ages'));
+
+                if(ages.length > 0) {
+                    $(".history").show();
+                }
+            });
+
+            $(".year").keyup(function(){
+               if($(this).val() == ""){
+                $("#age").text("");
+                $(".result").hide();
+               } 
+            });
+
+            function calculateAge(yearBorn) {
+                var date = new Date();
+                var currentYear = date.getFullYear();
+                var age = currentYear - yearBorn;
+                var ages = JSON.parse(localStorage.getItem('ages'));
+                ages.push(age);
+                localStorage.setItem('ages', JSON.stringify(ages));
+                return age;
+            }
+
+            function updateHistory() {
+                var ages = JSON.parse(localStorage.getItem('ages'));
+                var history = $("#ages");
+                $(history).html("");
+                ages.forEach(age => {
+                    var li = "<li>" + age + "</li>";
+                    $(history).append(li);
+                });
+            }
+        });
+    </script>
+    <style>
+        .result {
+            display: none;
+        }
+
+        .history {
+            display: none;
+        }
+    </style>
+</html>
